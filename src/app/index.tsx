@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Alert, Button, Text, TextInput, View } from 'react-native';
+import { router } from 'expo-router';
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from '../../lib/supabase';
 
@@ -36,7 +37,9 @@ export default function Index() {
         <Text style={{ fontSize: 22, marginBottom: 16 }}>
           Welcome to ReadTrack! You are logged in as {session.user.email}
         </Text>
-        <Button title="Log out" onPress={signOut} />
+                <Button title="Log out" onPress={signOut} />
+        <View style={{ height: 12 }} />
+                <Button title="My Books" onPress={() => { console.log('button pressed'); router.push('/books'); }} />
       </View>
     );
   }
