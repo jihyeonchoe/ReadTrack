@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
+
+import { Screen } from '@/components/screen';
+import { ThemedText } from '@/components/themed-text';
 import { supabase } from '../../lib/supabase';
 
 type Session = {
@@ -88,26 +91,41 @@ export default function Stats() {
   }
 
   return (
-    <ScrollView style={{ flex: 1, padding: 24 }}>
-      <Text style={{ fontSize: 28, marginBottom: 24 }}>My Stats</Text>
+    <Screen>
+      <ScrollView>
+        <ThemedText type="subtitle" style={styles.title}>
+          My Stats
+        </ThemedText>
 
-      <View style={{ marginBottom: 24 }}>
-        <Text style={{ fontSize: 16, color: '#666' }}>Current Streak</Text>
-        <Text style={{ fontSize: 40 }}>{streak} 🔥</Text>
-        <Text style={{ color: '#666' }}>{streak === 1 ? 'day' : 'days'} in a row</Text>
-      </View>
+        <View style={styles.section}>
+          <ThemedText type="small" themeColor="textSecondary">
+            Current Streak
+          </ThemedText>
+          <ThemedText style={styles.big}>{streak} 🔥</ThemedText>
+          <ThemedText type="small" themeColor="textSecondary">
+            {streak === 1 ? 'day' : 'days'} in a row
+          </ThemedText>
+        </View>
 
-      <View style={{ marginBottom: 24 }}>
-        <Text style={{ fontSize: 16, color: '#666' }}>Personal Records</Text>
-        <Text style={{ fontSize: 20, marginTop: 8 }}>Best day (pages): {bestPages}</Text>
-        <Text style={{ fontSize: 20 }}>Best day (minutes): {bestMinutes}</Text>
-      </View>
+        <View style={styles.section}>
+          <ThemedText type="small" themeColor="textSecondary">
+            Personal Records
+          </ThemedText>
+          <ThemedText style={styles.record}>Best day (pages): {bestPages}</ThemedText>
+          <ThemedText style={styles.record}>Best day (minutes): {bestMinutes}</ThemedText>
+        </View>
 
-      <View>
-        <Text style={{ fontSize: 16, color: '#666', marginBottom: 8 }}>
+        <ThemedText type="small" themeColor="textSecondary">
           Total sessions logged: {sessions.length}
-        </Text>
-      </View>
-    </ScrollView>
+        </ThemedText>
+      </ScrollView>
+    </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  title: { marginBottom: 24 },
+  section: { marginBottom: 32 },
+  big: { fontSize: 48, lineHeight: 56, fontWeight: '700' },
+  record: { fontSize: 20, lineHeight: 28, marginTop: 4 },
+});

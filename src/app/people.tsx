@@ -1,5 +1,11 @@
-import { useEffect, useState } from 'react';
-import { Alert, Button, FlatList, Text, View } from 'react-native';
+import { useCallback, useState } from 'react';
+import { useFocusEffect } from 'expo-router';
+import { Alert, FlatList, StyleSheet, View } from 'react-native';
+
+import { AppButton } from '@/components/app-button';
+import { Screen } from '@/components/screen';
+import { ThemedText } from '@/components/themed-text';
+import { useTheme } from '@/hooks/use-theme';
 import { supabase } from '../../lib/supabase';
 
 type Profile = {
@@ -8,13 +14,16 @@ type Profile = {
 };
 
 export default function People() {
+  const theme = useTheme();
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [followingIds, setFollowingIds] = useState<string[]>([]);
   const [myId, setMyId] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      loadData();
+    }, [])
+  );
 
   async function loadData() {
     const { data: userData } = await supabase.auth.getUser();
@@ -72,8 +81,10 @@ export default function People() {
   }
 
   return (
-    <View style={{ flex: 1, padding: 24 }}>
-      <Text style={{ fontSize: 28, marginBottom: 16 }}>Find Readers</Text>
+    <Screen>
+      <ThemedText type="subtitle" style={styles.title}>
+        Find Readers
+      </ThemedText>
 
       <FlatList
         data={profiles}
@@ -81,26 +92,30 @@ export default function People() {
         renderItem={({ item }) => {
           const isFollowing = followingIds.includes(item.id);
           return (
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                paddingVertical: 12,
-                borderBottomWidth: 1,
-                borderColor: '#ddd',
-              }}
-            >
-              <Text style={{ fontSize: 18 }}>{item.username}</Text>
+            <View style={[styles.row, { borderColor: theme.border }]}>
+              <ThemedText style={styles.name}>{item.username}</ThemedText>
               {isFollowing ? (
-                <Button title="Unfollow" onPress={() => unfollow(item.id)} color="gray" />
+                <AppButton title="Following" variant="secondary" onPress={() => unfollow(item.id)} />
               ) : (
-                <Button title="Follow" onPress={() => follow(item.id)} />
+                <AppButton title="Follow" onPress={() => follow(item.id)} />
               )}
             </View>
           );
         }}
       />
-    </View>
+    </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  title: { marginBottom: 16 },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    gap: 12,
+  },
+  name: { fontSize: 18, flexShrink: 1 },
+});
