@@ -41,3 +41,5 @@ example
 # generated native folders
 /ios
 /android
+# Playwright CLI output (may contain credentials)
+.playwright-cli/

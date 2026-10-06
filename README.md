@@ -54,3 +54,92 @@ Join our community of developers creating universal apps.
 
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+# ReadTrack
+
+A simple reading tracker designed to help people read consistently without turning reading into another task to manage.
+
+## Product Goal
+
+ReadTrack helps users:
+
+* Keep track of what they are reading
+* See their reading progress clearly
+* Maintain momentum
+* Build a consistent reading habit
+* Spend less time managing their reading and more time actually reading
+
+## Core Philosophy
+
+> Help users read more, not spend more time managing their reading.
+
+ReadTrack should remain simple, focused, and easy to understand.
+
+## Target Experience
+
+ReadTrack should feel:
+
+* Calm
+* Minimal
+* Modern
+* Focused
+* Intuitive
+* Lightweight
+
+A user should be able to open the app and immediately understand what to do.
+
+## MVP
+
+The first version should focus on the essential reading experience.
+
+Potential core functionality:
+
+* Add a book
+* View currently reading books
+* Track reading progress
+* Mark a book as finished
+* View basic reading history
+
+Only implement features that are necessary for the MVP.
+
+## Design Principles
+
+* Minimal visual clutter
+* Clear visual hierarchy
+* Simple navigation
+* Consistent spacing and typography
+* Responsive design
+* Accessible interactions
+* Useful visual feedback
+* Avoid unnecessary decoration
+
+## What ReadTrack Is NOT
+
+ReadTrack is not intended to become:
+
+* A social network
+* A complex book database
+* A Goodreads clone
+* A highly gamified productivity system
+* A complicated analytics dashboard
+
+Additional features should only be introduced when there is a clear user need.
+
+## Development Philosophy
+
+Build the smallest useful version first.
+
+Prioritize:
+
+1. User experience
+2. Simplicity
+3. Reliability
+4. Clarity
+5. Maintainability
+
+Avoid unnecessary complexity and feature creep.
+
+## Current Development Tools
+
+ReadTrack is being developed with Claude Code and uses project skills including:
+
+* Taste
