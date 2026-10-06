@@ -68,8 +68,8 @@ export default function Record() {
         </View>
       ) : (
         <>
-          <ThemedText type="smallBold" themeColor="textSecondary" style={styles.label}>
-            WHAT ARE YOU READING?
+          <ThemedText themeColor="textSecondary" style={styles.label}>
+            What are you reading?
           </ThemedText>
           <ScrollView style={styles.list} contentContainerStyle={styles.listContent}>
             {books.map((book) => {
@@ -83,7 +83,6 @@ export default function Record() {
                   style={[
                     styles.option,
                     { borderColor: isSelected ? theme.text : theme.border },
-                    isSelected && styles.optionSelected,
                   ]}>
                   <View
                     style={[
@@ -93,7 +92,9 @@ export default function Record() {
                     {isSelected && <View style={[styles.radioDot, { backgroundColor: theme.text }]} />}
                   </View>
                   <View style={styles.optionText}>
-                    <ThemedText style={styles.bookTitle}>{book.title}</ThemedText>
+                    <ThemedText type="serif" style={styles.bookTitle}>
+                      {book.title}
+                    </ThemedText>
                     <ThemedText type="small" themeColor="textSecondary">
                       {formatPageProgress(book.pages_read, book.total_pages)}
                     </ThemedText>
@@ -123,31 +124,30 @@ export default function Record() {
 }
 
 const styles = StyleSheet.create({
-  title: { marginBottom: 16 },
+  title: { marginBottom: 24 },
   center: { textAlign: 'center' },
   emptyWrap: { flex: 1, justifyContent: 'center', gap: 16 },
-  label: { marginBottom: 12, letterSpacing: 1 },
+  label: { marginBottom: 16 },
   list: { flex: 1 },
-  listContent: { gap: 10, paddingBottom: 16 },
+  listContent: { gap: 12, paddingBottom: 16 },
   option: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 14,
     borderWidth: 1,
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: 16,
+    padding: 18,
   },
-  optionSelected: { borderWidth: 2, padding: 15 },
   radio: {
     width: 22,
     height: 22,
     borderRadius: 11,
-    borderWidth: 2,
+    borderWidth: 1.5,
     alignItems: 'center',
     justifyContent: 'center',
   },
   radioDot: { width: 10, height: 10, borderRadius: 5 },
   optionText: { flex: 1, gap: 2 },
-  bookTitle: { fontSize: 17, lineHeight: 22, fontWeight: '600' },
+  bookTitle: { fontSize: 18, lineHeight: 24 },
   footer: { paddingTop: 12, paddingBottom: 24 },
 });

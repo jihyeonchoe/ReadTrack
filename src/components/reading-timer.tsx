@@ -96,7 +96,7 @@ export function ReadingTimer({ bookTitle, onSave, onDiscard }: ReadingTimerProps
           <ThemedText type="small" themeColor="textSecondary" style={styles.center}>
             {phase === 'finished' ? 'SESSION SUMMARY' : phase === 'paused' ? 'PAUSED' : 'READING'}
           </ThemedText>
-          <ThemedText style={[styles.book, styles.center]} numberOfLines={2}>
+          <ThemedText type="serif" style={[styles.book, styles.center]} numberOfLines={2}>
             {bookTitle}
           </ThemedText>
 
@@ -146,12 +146,12 @@ const styles = StyleSheet.create({
   screen: { flex: 1, paddingHorizontal: 24 },
   column: { flex: 1, width: '100%', maxWidth: 480, alignSelf: 'center' },
   center: { textAlign: 'center' },
-  book: { fontSize: 20, lineHeight: 28, fontWeight: '600', marginTop: 4 },
+  book: { marginTop: 8 },
   clockWrap: { flex: 1, alignItems: 'center', justifyContent: 'center', minHeight: 160 },
   clock: {
-    fontSize: 72,
-    lineHeight: 84,
-    fontWeight: '700',
+    fontSize: 80,
+    lineHeight: 92,
+    fontWeight: '200',
     fontVariant: ['tabular-nums'],
   },
   stack: { gap: 12 },

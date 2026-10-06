@@ -4,7 +4,17 @@ import { Fonts, ThemeColor } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 export type ThemedTextProps = TextProps & {
-  type?: 'default' | 'title' | 'small' | 'smallBold' | 'subtitle' | 'link' | 'linkPrimary' | 'code';
+  type?:
+    | 'default'
+    | 'title'
+    | 'small'
+    | 'smallBold'
+    | 'subtitle'
+    | 'serif'
+    | 'number'
+    | 'link'
+    | 'linkPrimary'
+    | 'code';
   themeColor?: ThemeColor;
 };
 
@@ -20,6 +30,8 @@ export function ThemedText({ style, type = 'default', themeColor, ...rest }: The
         type === 'small' && styles.small,
         type === 'smallBold' && styles.smallBold,
         type === 'subtitle' && styles.subtitle,
+        type === 'serif' && styles.serif,
+        type === 'number' && styles.number,
         type === 'link' && styles.link,
         type === 'linkPrimary' && styles.linkPrimary,
         type === 'code' && styles.code,
@@ -30,31 +42,51 @@ export function ThemedText({ style, type = 'default', themeColor, ...rest }: The
   );
 }
 
+// Type system: serif (Fonts.serif — New York on iOS) for page titles, book titles and
+// big numbers; light-weight system sans for everything else.
 const styles = StyleSheet.create({
   small: {
     fontSize: 14,
     lineHeight: 20,
-    fontWeight: 500,
+    fontWeight: 400,
   },
   smallBold: {
     fontSize: 14,
     lineHeight: 20,
-    fontWeight: 700,
+    fontWeight: 600,
   },
   default: {
     fontSize: 16,
     lineHeight: 24,
-    fontWeight: 500,
+    fontWeight: 400,
   },
   title: {
-    fontSize: 48,
-    fontWeight: 600,
-    lineHeight: 52,
+    fontFamily: Fonts.serif,
+    fontSize: 40,
+    lineHeight: 46,
+    fontWeight: 400,
   },
   subtitle: {
+    fontFamily: Fonts.serif,
     fontSize: 32,
-    lineHeight: 44,
-    fontWeight: 600,
+    lineHeight: 40,
+    fontWeight: 400,
+    letterSpacing: -0.3,
+  },
+  /** Book titles and section headings. */
+  serif: {
+    fontFamily: Fonts.serif,
+    fontSize: 19,
+    lineHeight: 26,
+    fontWeight: 400,
+  },
+  /** Big stat numbers. */
+  number: {
+    fontFamily: Fonts.serif,
+    fontSize: 28,
+    lineHeight: 34,
+    fontWeight: 400,
+    fontVariant: ['tabular-nums'],
   },
   link: {
     lineHeight: 30,

@@ -23,7 +23,7 @@ type BookCardProps = {
   onMarkFinished: () => void;
 };
 
-/** A book that is currently being read: title, progress and actions. */
+/** A book that is currently being read: title, progress, one main action and quiet secondary links. */
 export function BookCard({
   book,
   onOpen,
@@ -41,46 +41,50 @@ export function BookCard({
       <Pressable
         onPress={onOpen}
         accessibilityRole="button"
-        accessibilityHint="Shows your reading sessions for this book"
+        accessibilityHint="Opens your reading log for this book"
         style={({ pressed }) => [styles.titleRow, pressed && styles.pressed]}>
-        <ThemedText style={styles.title}>{book.title}</ThemedText>
+        <ThemedText type="serif" style={styles.title}>
+          {book.title}
+        </ThemedText>
         <ThemedText themeColor="textSecondary">›</ThemedText>
       </Pressable>
 
       {percent !== null ? (
         <View style={styles.progress}>
-          <View style={styles.progressText}>
-            <ThemedText type="smallBold">{percent}%</ThemedText>
-            <ThemedText type="small" themeColor="textSecondary">
-              {book.pages_read} / {total} pages
-            </ThemedText>
-          </View>
           <ProgressBar percent={percent} label={`${book.title}: ${percent}% read`} />
+          <View style={styles.progressText}>
+            <ThemedText type="small" themeColor="textSecondary">
+              {book.pages_read} of {total} pages
+            </ThemedText>
+            <ThemedText type="small">{percent}%</ThemedText>
+          </View>
         </View>
       ) : (
         <ThemedText type="small" themeColor="textSecondary">
-          {book.pages_read} pages read · add total pages to see your progress
+          {book.pages_read} pages read
         </ThemedText>
       )}
 
-      <View style={styles.actions}>
-        <AppButton title="▶  Start reading" onPress={onStartTimer} />
-        <AppButton title="Log manually" variant="secondary" onPress={onLogSession} />
-        {total === null && (
-          <AppButton title="Set total pages" variant="secondary" onPress={onSetTotalPages} />
-        )}
-        <AppButton title="Mark as finished" variant="secondary" onPress={onMarkFinished} />
+      <View style={styles.main}>
+        <AppButton title="Start reading" onPress={onStartTimer} />
+      </View>
+
+      <View style={styles.links}>
+        <AppButton title="Log manually" variant="text" onPress={onLogSession} />
+        {total === null && <AppButton title="Add total pages" variant="text" onPress={onSetTotalPages} />}
+        <AppButton title="Finished" variant="text" onPress={onMarkFinished} />
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  card: { borderWidth: 1, borderRadius: 12, padding: 16, gap: 10, marginBottom: 12 },
-  titleRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 8 },
-  title: { fontSize: 18, lineHeight: 24, fontWeight: '600', flexShrink: 1 },
+  card: { borderWidth: StyleSheet.hairlineWidth, borderRadius: 16, padding: 20, gap: 12, marginBottom: 16 },
+  titleRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 },
+  title: { flexShrink: 1, fontSize: 21, lineHeight: 28 },
   pressed: { opacity: 0.6 },
-  progress: { gap: 6 },
-  progressText: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' },
-  actions: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 4 },
+  progress: { gap: 8 },
+  progressText: { flexDirection: 'row', justifyContent: 'space-between' },
+  main: { marginTop: 4 },
+  links: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', columnGap: 24, marginTop: -4 },
 });

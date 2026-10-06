@@ -169,11 +169,16 @@ export default function Books() {
         </View>
         <View style={styles.addButtons}>
           <View style={styles.flex}>
-            <AppButton title="Start reading" onPress={() => addBook('reading')} disabled={!title.trim()} />
+            <AppButton
+              title="Add to reading"
+              variant="secondary"
+              onPress={() => addBook('reading')}
+              disabled={!title.trim()}
+            />
           </View>
           <View style={styles.flex}>
             <AppButton
-              title="Want to read"
+              title="Save for later"
               variant="secondary"
               onPress={() => addBook('want')}
               disabled={!title.trim()}
@@ -181,9 +186,7 @@ export default function Books() {
           </View>
         </View>
 
-        <ThemedText type="smallBold" themeColor="textSecondary" style={styles.sectionLabel}>
-          CURRENTLY READING
-        </ThemedText>
+        <SectionHeader title="Currently Reading" count={reading.length} />
         {reading.length === 0 ? (
           <ThemedText themeColor="textSecondary">
             Nothing in progress. Add a book above to start.
@@ -207,24 +210,22 @@ export default function Books() {
 
         {wantToRead.length > 0 && (
           <>
-            <ThemedText type="smallBold" themeColor="textSecondary" style={styles.sectionLabel}>
-              WANT TO READ · {wantToRead.length}
-            </ThemedText>
+            <SectionHeader title="Want to Read" count={wantToRead.length} />
             {wantToRead.map((book) => (
               <View key={book.id} style={[styles.finishedRow, { borderColor: theme.border }]}>
-                <View style={styles.finishedTitle}>
-                  <ThemedText>{book.title}</ThemedText>
-                  {book.total_pages ? (
-                    <ThemedText type="small" themeColor="textSecondary">
-                      {book.total_pages} pages
-                    </ThemedText>
-                  ) : null}
-                </View>
-                <AppButton
-                  title="Start"
-                  variant="secondary"
-                  onPress={() => startReading(book.id)}
-                />
+                <Pressable
+                  onPress={() => openLog(book.id)}
+                  accessibilityRole="button"
+                  accessibilityHint="Shows details for this book"
+                  style={({ pressed }) => [styles.finishedTitle, styles.flex, pressed && styles.pressed]}>
+                  <ThemedText type="serif" style={styles.rowTitle}>
+                    {book.title}
+                  </ThemedText>
+                  <ThemedText type="small" themeColor="textSecondary">
+                    {book.total_pages ? `${book.total_pages} pages  ›` : '›'}
+                  </ThemedText>
+                </Pressable>
+                <AppButton title="Start" variant="text" onPress={() => startReading(book.id)} />
               </View>
             ))}
           </>
@@ -232,9 +233,7 @@ export default function Books() {
 
         {finished.length > 0 && (
           <>
-            <ThemedText type="smallBold" themeColor="textSecondary" style={styles.sectionLabel}>
-              FINISHED · {finished.length}
-            </ThemedText>
+            <SectionHeader title="Finished" count={finished.length} />
             {finished.map((book) => (
               <Pressable
                 key={book.id}
@@ -246,9 +245,11 @@ export default function Books() {
                   { borderColor: theme.border },
                   pressed && styles.pressed,
                 ]}>
-                <ThemedText style={styles.finishedTitle}>{book.title}</ThemedText>
+                <ThemedText type="serif" style={[styles.finishedTitle, styles.rowTitle]}>
+                  {book.title}
+                </ThemedText>
                 <ThemedText type="small" themeColor="textSecondary">
-                  ✓ {book.total_pages ?? book.pages_read} pages ›
+                  {book.total_pages ?? book.pages_read} pages  ›
                 </ThemedText>
               </Pressable>
             ))}
@@ -305,22 +306,47 @@ export default function Books() {
   );
 }
 
+/** Bold section heading with a count, underlined in black, e.g. "Finished  3". */
+function SectionHeader({ title, count }: { title: string; count: number }) {
+  const theme = useTheme();
+  return (
+    <View style={[styles.sectionHeader, { borderColor: theme.border }]} accessibilityRole="header">
+      <ThemedText type="serif" style={styles.sectionTitle}>
+        {title}
+      </ThemedText>
+      <ThemedText type="small" themeColor="textSecondary">
+        {count}
+      </ThemedText>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
-  content: { paddingBottom: 48 },
-  title: { marginBottom: 16 },
+  content: { paddingBottom: 64 },
+  title: { marginBottom: 24 },
   addRow: { flexDirection: 'row', gap: 8 },
   addButtons: { flexDirection: 'row', gap: 8, marginTop: 8 },
   flex: { flex: 1 },
   titleField: { flex: 1 },
   pagesField: { width: 88 },
-  sectionLabel: { marginTop: 28, marginBottom: 12, letterSpacing: 1 },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: 8,
+    marginTop: 44,
+    marginBottom: 16,
+    paddingBottom: 10,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  sectionTitle: { fontSize: 22, lineHeight: 28 },
+  rowTitle: { fontSize: 17, lineHeight: 24 },
   finishedRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     gap: 12,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
+    paddingVertical: 16,
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   finishedTitle: { flexShrink: 1 },
   pressed: { opacity: 0.6 },

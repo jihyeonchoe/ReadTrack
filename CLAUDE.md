@@ -118,20 +118,28 @@ Use the installed design skills when appropriate:
 - UI UX Pro Max
 - Playwright CLI
 
-### Color palette — black & white
+### Look & feel — calm, airy, editorial (black & white)
 
-| Role | Color |
-|---|---|
-| Background | `#FFFFFF` |
-| Text | `#111111` |
-| Secondary text | `#6E6E6E` |
-| Border | `#E2E2E2` |
-| Accent / primary button | `#111111` |
+| Role | Light | Dark |
+|---|---|---|
+| Background | `#FAFAF9` | `#141414` |
+| Text (soft off-black, never pure black) | `#1F1F1F` | `#ECECEC` |
+| Secondary text | `#71717A` | `#A1A1AA` |
+| Border (hairline) | `#E7E7E4` | `#262626` |
 
-Colors live in `src/constants/theme.ts` (with an inverted dark mode).
-No other accent colors. Create hierarchy with weight, size and spacing,
-not color. Use the shared `Screen`, `AppButton`, `TextField` and
-`ThemedText` components instead of raw inline styles.
+Colors live in `src/constants/theme.ts`. No accent color.
+
+Typography (`ThemedText` types):
+- `subtitle` / `serif` / `number` — system serif (New York on iOS) for page titles,
+  book titles, section headings and big numbers. Regular weight, never heavy.
+- `default` / `small` — light system sans (400) for body text; `smallBold` (600) sparingly.
+
+Layout rules:
+- Lots of white space; group with hairline dividers, not boxes. Cards only for
+  things that matter most (currently-reading books, goals).
+- Shapes: buttons are pills, cards 16px radius, inputs 12px radius.
+- One filled primary button per card/screen; other actions use the `text` button variant.
+- Use the shared `Screen`, `AppButton`, `TextField`, `Sheet` and `ThemedText` components.
 
 Prefer:
 

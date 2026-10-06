@@ -49,9 +49,9 @@ export function ShareBars({ shares, empty }: { shares: Share[]; empty: string })
 }
 
 const styles = StyleSheet.create({
-  list: { gap: 12 },
-  row: { gap: 6 },
+  list: { gap: 16 },
+  row: { gap: 8 },
   labels: { flexDirection: 'row', justifyContent: 'space-between', gap: 8 },
-  track: { height: 8, borderRadius: 4, overflow: 'hidden' },
-  fill: { height: '100%', borderRadius: 4 },
+  track: { height: 4, borderRadius: 2, overflow: 'hidden' },
+  fill: { height: '100%', borderRadius: 2 },
 });

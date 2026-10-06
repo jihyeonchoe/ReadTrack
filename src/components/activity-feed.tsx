@@ -116,12 +116,14 @@ export function ActivityFeed({ onSignOut }: { onSignOut: () => void }) {
           return (
             <View style={[styles.card, { borderColor: theme.border }]}>
               <View style={styles.cardTop}>
-                <ThemedText type="smallBold">{name}</ThemedText>
+                <ThemedText type="small">{name}</ThemedText>
                 <ThemedText type="small" themeColor="textSecondary">
                   {formatDay(item.session_date)}
                 </ThemedText>
               </View>
-              <ThemedText style={styles.bookTitle}>{item.books?.title ?? 'A book'}</ThemedText>
+              <ThemedText type="serif" style={styles.bookTitle}>
+                {item.books?.title ?? 'A book'}
+              </ThemedText>
 
               <View style={styles.metrics}>
                 <Metric label="Time" value={item.minutes ? `${item.minutes} min` : '–'} />
@@ -157,9 +159,7 @@ function Metric({ label, value }: { label: string; value: string }) {
       <ThemedText type="small" themeColor="textSecondary">
         {label}
       </ThemedText>
-      <ThemedText type="smallBold" style={styles.metricValue}>
-        {value}
-      </ThemedText>
+      <ThemedText style={styles.metricValue}>{value}</ThemedText>
     </View>
   );
 }
@@ -169,14 +169,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 8,
   },
   listContent: { paddingBottom: 48, flexGrow: 1 },
   empty: { textAlign: 'center', marginTop: 48 },
-  card: { borderWidth: 1, borderRadius: 12, padding: 16, gap: 6, marginBottom: 12 },
+  card: { borderBottomWidth: StyleSheet.hairlineWidth, paddingVertical: 24, gap: 8 },
   cardTop: { flexDirection: 'row', justifyContent: 'space-between', gap: 8 },
-  bookTitle: { fontSize: 18, lineHeight: 24, fontWeight: '700' },
-  metrics: { flexDirection: 'row', gap: 24, marginVertical: 4 },
-  metric: { gap: 0 },
-  metricValue: { fontSize: 16, lineHeight: 22 },
+  bookTitle: { fontSize: 22, lineHeight: 29 },
+  metrics: { flexDirection: 'row', gap: 28, marginTop: 6 },
+  metric: { gap: 2 },
+  metricValue: { fontSize: 17, lineHeight: 22 },
 });

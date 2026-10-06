@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react';
 import { useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
+import { AppButton } from '@/components/app-button';
 import { type Book } from '@/components/book-card';
 import { ProgressBar } from '@/components/progress-bar';
 import { ThemedText } from '@/components/themed-text';
@@ -26,7 +27,7 @@ type SessionRow = {
 export default function BookLog() {
   const theme = useTheme();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const [book, setBook] = useState<Book | null>(null);
+  const [book, setBook] = useState<(Book & { created_at: string }) | null>(null);
   const [sessions, setSessions] = useState<SessionRow[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -41,7 +42,7 @@ export default function BookLog() {
     const [bookRes, sessionRes] = await Promise.all([
       supabase
         .from('books')
-        .select('id, title, status, pages_read, total_pages, genre')
+        .select('id, title, status, pages_read, total_pages, genre, created_at')
         .eq('id', id)
         .single(),
       supabase
@@ -56,6 +57,13 @@ export default function BookLog() {
     if (sessionRes.error) Alert.alert('Error loading sessions', sessionRes.error.message);
     else setSessions(sessionRes.data ?? []);
     setLoading(false);
+  }
+
+  async function startReading() {
+    if (!book) return;
+    const { error } = await supabase.from('books').update({ status: 'reading' }).eq('id', book.id);
+    if (error) Alert.alert('Error updating book', error.message);
+    else setBook({ ...book, status: 'reading' });
   }
 
   async function chooseGenre(g: string) {
@@ -84,6 +92,8 @@ export default function BookLog() {
     else days.push({ date: s.session_date, items: [s] });
   }
 
+  const wantToRead = book?.status === 'want_to_read';
+
   if (!book) {
     return (
       <ThemedView style={styles.center}>
@@ -102,9 +112,21 @@ export default function BookLog() {
               ? 'WANT TO READ'
               : 'CURRENTLY READING'}
         </ThemedText>
-        <ThemedText style={styles.title}>{book.title}</ThemedText>
+        <ThemedText type="subtitle" style={styles.title}>
+          {book.title}
+        </ThemedText>
 
-        {percent !== null && (
+        {wantToRead && (
+          <View style={styles.info}>
+            <InfoRow label="Pages" value={book.total_pages ? String(book.total_pages) : 'Not set'} />
+            <InfoRow label="Added" value={formatDay(book.created_at.slice(0, 10))} />
+            <View style={styles.startButton}>
+              <AppButton title="Start reading" onPress={startReading} />
+            </View>
+          </View>
+        )}
+
+        {!wantToRead && percent !== null && (
           <View style={styles.progress}>
             <View style={styles.rowTop}>
               <ThemedText type="smallBold">{percent}%</ThemedText>
@@ -143,6 +165,8 @@ export default function BookLog() {
           })}
         </ScrollView>
 
+        {!wantToRead && (
+        <>
         <View style={[styles.summary, { borderColor: theme.border }]}>
           <Stat value={formatDuration(totalMinutes)} label="total reading" />
           <Stat value={String(sessions.length)} label={sessions.length === 1 ? 'session' : 'sessions'} />
@@ -192,15 +216,31 @@ export default function BookLog() {
             })}
           </View>
         )}
+        </>
+        )}
       </ScrollView>
     </ThemedView>
+  );
+}
+
+function InfoRow({ label, value }: { label: string; value: string }) {
+  const theme = useTheme();
+  return (
+    <View style={[styles.infoRow, { borderColor: theme.border }]}>
+      <ThemedText type="small" themeColor="textSecondary">
+        {label}
+      </ThemedText>
+      <ThemedText>{value}</ThemedText>
+    </View>
   );
 }
 
 function Stat({ value, label }: { value: string; label: string }) {
   return (
     <View style={styles.stat}>
-      <ThemedText style={styles.statValue}>{value}</ThemedText>
+      <ThemedText type="number" style={styles.statValue}>
+        {value}
+      </ThemedText>
       <ThemedText type="small" themeColor="textSecondary">
         {label}
       </ThemedText>
@@ -219,8 +259,16 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     paddingBottom: 48,
   },
-  title: { fontSize: 26, lineHeight: 34, fontWeight: '700', marginTop: 2 },
-  progress: { gap: 6, marginTop: 16 },
+  title: { marginTop: 6 },
+  progress: { gap: 8, marginTop: 20 },
+  info: { marginTop: 24 },
+  infoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 14,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  startButton: { marginTop: 24, marginBottom: 8 },
   genres: { marginTop: 16, flexGrow: 0 },
   genreRow: { gap: 6 },
   chip: {
@@ -232,15 +280,15 @@ const styles = StyleSheet.create({
   },
   summary: {
     flexDirection: 'row',
-    marginTop: 20,
-    paddingVertical: 14,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
+    marginTop: 28,
+    paddingVertical: 20,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   stat: { flex: 1, alignItems: 'center' },
-  statValue: { fontSize: 20, lineHeight: 26, fontWeight: '700' },
+  statValue: { fontSize: 24, lineHeight: 30 },
   empty: { marginVertical: 32, textAlign: 'center' },
-  day: { marginTop: 20 },
-  row: { paddingVertical: 10, borderBottomWidth: 1, gap: 2 },
+  day: { marginTop: 28 },
+  row: { paddingVertical: 14, borderBottomWidth: StyleSheet.hairlineWidth, gap: 4 },
   rowTop: { flexDirection: 'row', justifyContent: 'space-between', gap: 8 },
 });

@@ -107,7 +107,12 @@ export function summarize(
 
 // ---------- charts ----------
 
-export type Bar = { label: string; value: number; current: boolean };
+export type Bar = {
+  label: string; // short axis label, e.g. "J"
+  fullLabel?: string; // shown when the bar is selected, e.g. "Jan"
+  value: number;
+  current: boolean;
+};
 
 /** Minutes read on each day of the current week, Monday first. */
 export function weekBars(sessions: StatSession[], now = new Date()): Bar[] {
@@ -130,8 +135,43 @@ export function monthBars(sessions: StatSession[], now = new Date()): Bar[] {
     const value = sessions
       .filter((s) => s.session_date.startsWith(prefix))
       .reduce((sum, s) => sum + (s.minutes ?? 0), 0);
-    return { label, value, current: i === now.getMonth() };
+    return { label, fullLabel: monthName(y, i), value, current: i === now.getMonth() };
   });
+}
+
+function monthName(year: number, monthIndex: number) {
+  return new Date(year, monthIndex, 1).toLocaleDateString(undefined, { month: 'short' });
+}
+
+/** Books finished in each month of the current year. */
+export function booksByMonth(finished: string[], now = new Date()): Bar[] {
+  const y = now.getFullYear();
+  return 'JFMAMJJASOND'.split('').map((label, i) => {
+    const prefix = `${y}-${String(i + 1).padStart(2, '0')}`;
+    return {
+      label,
+      fullLabel: monthName(y, i),
+      value: finished.filter((d) => d.startsWith(prefix)).length,
+      current: i === now.getMonth(),
+    };
+  });
+}
+
+/** Books finished per year, from your first finished book's year (max 6 years) to this year. */
+export function booksByYear(finished: string[], now = new Date()): Bar[] {
+  const thisYear = now.getFullYear();
+  const first = finished.length ? Math.min(...finished.map((d) => Number(d.slice(0, 4)))) : thisYear;
+  const from = Math.max(first, thisYear - 5);
+  const bars: Bar[] = [];
+  for (let y = from; y <= thisYear; y++) {
+    bars.push({
+      label: `'${String(y).slice(2)}`,
+      fullLabel: String(y),
+      value: finished.filter((d) => d.startsWith(String(y))).length,
+      current: y === thisYear,
+    });
+  }
+  return bars;
 }
 
 /** Minutes read per date (YYYY-MM-DD → minutes). A date with a session but no minutes counts as 0. */

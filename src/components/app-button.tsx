@@ -5,14 +5,18 @@ import { useTheme } from '@/hooks/use-theme';
 type AppButtonProps = {
   title: string;
   onPress: () => void;
-  variant?: 'primary' | 'secondary';
+  variant?: 'primary' | 'secondary' | 'text';
   disabled?: boolean;
 };
 
-/** Black filled (primary) or outlined (secondary) button. */
+/**
+ * primary: filled pill. secondary: hairline-outlined pill.
+ * text: no box at all — for quiet, low-priority actions.
+ */
 export function AppButton({ title, onPress, variant = 'primary', disabled }: AppButtonProps) {
   const theme = useTheme();
   const primary = variant === 'primary';
+  const text = variant === 'text';
 
   return (
     <Pressable
@@ -21,13 +25,18 @@ export function AppButton({ title, onPress, variant = 'primary', disabled }: App
       accessibilityRole="button"
       accessibilityState={{ disabled }}
       style={({ pressed }) => [
-        styles.base,
-        primary
-          ? { backgroundColor: theme.text, borderColor: theme.text }
-          : { backgroundColor: 'transparent', borderColor: theme.border },
-        (pressed || disabled) && styles.dimmed,
+        text ? styles.textBase : styles.base,
+        primary && { backgroundColor: theme.text, borderColor: theme.text },
+        variant === 'secondary' && { backgroundColor: 'transparent', borderColor: theme.border },
+        pressed && styles.pressed,
+        disabled && styles.disabled,
       ]}>
-      <Text style={[styles.label, { color: primary ? theme.background : theme.text }]}>
+      <Text
+        style={[
+          styles.label,
+          { color: primary ? theme.background : text ? theme.textSecondary : theme.text },
+          text && styles.textLabel,
+        ]}>
         {title}
       </Text>
     </Pressable>
@@ -36,13 +45,16 @@ export function AppButton({ title, onPress, variant = 'primary', disabled }: App
 
 const styles = StyleSheet.create({
   base: {
-    minHeight: 48,
-    paddingHorizontal: 16,
-    borderRadius: 8,
+    minHeight: 46,
+    paddingHorizontal: 20,
+    borderRadius: 999,
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  label: { fontSize: 16, fontWeight: '600' },
-  dimmed: { opacity: 0.5 },
+  textBase: { minHeight: 44, paddingHorizontal: 4, justifyContent: 'center' },
+  label: { fontSize: 15, fontWeight: '500' },
+  textLabel: { fontSize: 14, textDecorationLine: 'underline' },
+  pressed: { opacity: 0.6, transform: [{ scale: 0.98 }] },
+  disabled: { opacity: 0.35 },
 });

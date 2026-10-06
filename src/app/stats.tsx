@@ -15,6 +15,8 @@ import { TextField } from '@/components/text-field';
 import { ThemedText } from '@/components/themed-text';
 import { formatDuration } from '@/utils/reading';
 import {
+  booksByMonth,
+  booksByYear,
   finishedDates,
   genreShares,
   getPeriod,
@@ -189,9 +191,17 @@ export default function Stats() {
             </Section>
           </>
         ) : (
-          <Section title="Minutes by month">
-            <BarChart bars={monthBars(sessions, now)} />
-          </Section>
+          <>
+            <Section title="Minutes by month">
+              <BarChart bars={monthBars(sessions, now)} />
+            </Section>
+            <Section title={`Books finished · ${now.getFullYear()}`}>
+              <BarChart bars={booksByMonth(finished, now)} unit="books" unitOne="book" />
+            </Section>
+            <Section title="Books finished by year">
+              <BarChart bars={booksByYear(finished, now)} unit="books" unitOne="book" />
+            </Section>
+          </>
         )}
 
         <Section title="When you read">
@@ -252,7 +262,9 @@ function changeText(now: number, before: number, prevLabel: string) {
 function Tile({ value, label, change, big }: { value: string; label: string; change?: string; big?: boolean }) {
   return (
     <View style={styles.tile}>
-      <ThemedText style={big ? styles.tileBig : styles.tileValue}>{value}</ThemedText>
+      <ThemedText type="number" style={big ? styles.tileBig : styles.tileValue}>
+        {value}
+      </ThemedText>
       <ThemedText type="small" themeColor="textSecondary">
         {label}
       </ThemedText>
@@ -266,13 +278,13 @@ function Tile({ value, label, change, big }: { value: string; label: string; cha
 }
 
 const styles = StyleSheet.create({
-  content: { paddingBottom: 48 },
-  title: { marginBottom: 16 },
-  goals: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginBottom: 12 },
-  toggle: { marginVertical: 12 },
-  tiles: { flexDirection: 'row', flexWrap: 'wrap', rowGap: 16 },
-  tile: { width: '50%', paddingRight: 8 },
-  tileValue: { fontSize: 24, lineHeight: 30, fontWeight: '700' },
-  tileBig: { fontSize: 36, lineHeight: 42, fontWeight: '800' },
+  content: { paddingBottom: 64 },
+  title: { marginBottom: 24 },
+  goals: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginBottom: 32 },
+  toggle: { marginBottom: 28 },
+  tiles: { flexDirection: 'row', flexWrap: 'wrap', rowGap: 24 },
+  tile: { width: '50%', paddingRight: 8, gap: 2 },
+  tileValue: { fontSize: 28, lineHeight: 34 },
+  tileBig: { fontSize: 44, lineHeight: 50 },
   change: { fontSize: 12, lineHeight: 16 },
 });

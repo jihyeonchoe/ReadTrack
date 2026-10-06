@@ -11,7 +11,11 @@ export function TextField({ style, placeholder, ...rest }: TextInputProps) {
       placeholder={placeholder}
       accessibilityLabel={placeholder}
       placeholderTextColor={theme.textSecondary}
-      style={[styles.input, { color: theme.text, borderColor: theme.border }, style]}
+      style={[
+        styles.input,
+        { color: theme.text, borderColor: theme.border, backgroundColor: theme.background },
+        style,
+      ]}
       {...rest}
     />
   );
@@ -21,8 +25,8 @@ const styles = StyleSheet.create({
   input: {
     minHeight: 48,
     borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 14,
+    borderRadius: 12,
+    paddingHorizontal: 16,
     fontSize: 16,
   },
 });

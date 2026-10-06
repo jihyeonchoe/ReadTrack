@@ -42,15 +42,16 @@ export function MonthCalendar({ readDays, now = new Date() }: { readDays: Record
               accessibilityLabel={`${day}: ${read ? `read ${readDays[date]} minutes` : 'no reading'}`}>
               <View
                 style={[
-                  styles.dot,
-                  read && { backgroundColor: theme.text },
-                  isToday && { borderWidth: 2, borderColor: theme.text },
+                  styles.day,
+                  read && { backgroundColor: theme.backgroundSelected },
+                  isToday && { borderWidth: 1, borderColor: theme.text },
                 ]}>
                 <ThemedText
                   type="small"
-                  style={{ color: read ? theme.background : theme.textSecondary, fontWeight: read ? '700' : '500' }}>
+                  style={{ color: read ? theme.text : theme.textSecondary, fontWeight: read ? '600' : '400' }}>
                   {day}
                 </ThemedText>
+                <View style={[styles.mark, read && { backgroundColor: theme.text }]} />
               </View>
             </View>
           );
@@ -65,5 +66,6 @@ const styles = StyleSheet.create({
   head: { width: `${100 / 7}%`, textAlign: 'center' },
   grid: { flexDirection: 'row', flexWrap: 'wrap' },
   cell: { width: `${100 / 7}%`, aspectRatio: 1, padding: 3 },
-  dot: { flex: 1, borderRadius: 999, alignItems: 'center', justifyContent: 'center' },
+  day: { flex: 1, borderRadius: 12, alignItems: 'center', justifyContent: 'center', gap: 2 },
+  mark: { width: 4, height: 4, borderRadius: 2 },
 });

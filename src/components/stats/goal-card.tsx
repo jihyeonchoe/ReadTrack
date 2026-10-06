@@ -26,7 +26,7 @@ export function GoalCard({ title, done, goal, unit, elapsed, onEdit }: GoalCardP
         onPress={onEdit}
         accessibilityRole="button"
         style={[styles.card, styles.empty, { borderColor: theme.border }]}>
-        <ThemedText type="smallBold">{title}</ThemedText>
+        <ThemedText type="small">{title}</ThemedText>
         <ThemedText type="small" themeColor="textSecondary">
           Tap to set a goal ›
         </ThemedText>
@@ -51,7 +51,7 @@ export function GoalCard({ title, done, goal, unit, elapsed, onEdit }: GoalCardP
   return (
     <View style={[styles.card, { borderColor: theme.border }]}>
       <View style={styles.top}>
-        <ThemedText type="smallBold">{title}</ThemedText>
+        <ThemedText type="small">{title}</ThemedText>
         <Pressable onPress={onEdit} accessibilityRole="button" accessibilityLabel={`Edit ${title}`} hitSlop={12}>
           <ThemedText type="small" themeColor="textSecondary">
             Edit
@@ -60,7 +60,9 @@ export function GoalCard({ title, done, goal, unit, elapsed, onEdit }: GoalCardP
       </View>
 
       <View style={styles.numbers}>
-        <ThemedText style={styles.pct}>{pct}%</ThemedText>
+        <ThemedText type="number" style={styles.pct}>
+          {pct}%
+        </ThemedText>
         <ThemedText type="small" themeColor="textSecondary">
           {done} / {goal} {unit}
         </ThemedText>
@@ -78,7 +80,7 @@ export function GoalCard({ title, done, goal, unit, elapsed, onEdit }: GoalCardP
         )}
       </View>
 
-      <ThemedText type="small" themeColor={diff < 0 && !reached ? 'textSecondary' : 'text'}>
+      <ThemedText type="small" themeColor="textSecondary">
         {status}
       </ThemedText>
     </View>
@@ -86,12 +88,12 @@ export function GoalCard({ title, done, goal, unit, elapsed, onEdit }: GoalCardP
 }
 
 const styles = StyleSheet.create({
-  card: { flex: 1, minWidth: 220, borderWidth: 1, borderRadius: 12, padding: 16, gap: 8 },
-  empty: { justifyContent: 'center', minHeight: 120 },
+  card: { flex: 1, minWidth: 220, borderWidth: StyleSheet.hairlineWidth, borderRadius: 16, padding: 20, gap: 10 },
+  empty: { justifyContent: 'center', minHeight: 132 },
   top: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   numbers: { flexDirection: 'row', alignItems: 'baseline', gap: 8 },
-  pct: { fontSize: 36, lineHeight: 42, fontWeight: '800' },
-  track: { height: 12, borderRadius: 6, overflow: 'visible', justifyContent: 'center' },
-  fill: { height: '100%', borderRadius: 6 },
-  marker: { position: 'absolute', width: 2, height: 20, top: -4, marginLeft: -1, borderRadius: 1 },
+  pct: { fontSize: 44, lineHeight: 50 },
+  track: { height: 6, borderRadius: 3, overflow: 'visible', justifyContent: 'center' },
+  fill: { height: '100%', borderRadius: 3 },
+  marker: { position: 'absolute', width: 2, height: 16, top: -5, marginLeft: -1, borderRadius: 1 },
 });

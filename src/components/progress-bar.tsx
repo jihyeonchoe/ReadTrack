@@ -19,6 +19,6 @@ export function ProgressBar({ percent, label }: { percent: number; label: string
 }
 
 const styles = StyleSheet.create({
-  track: { height: 6, borderRadius: 3, overflow: 'hidden' },
-  fill: { height: '100%', borderRadius: 3 },
+  track: { height: 4, borderRadius: 2, overflow: 'hidden' },
+  fill: { height: '100%', borderRadius: 2 },
 });
