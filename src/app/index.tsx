@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
-import { router } from 'expo-router';
 
+import { ActivityFeed } from '@/components/activity-feed';
 import { AppButton } from '@/components/app-button';
 import { Screen } from '@/components/screen';
 import { TextField } from '@/components/text-field';
@@ -47,18 +47,7 @@ export default function Index() {
   }
 
   if (session) {
-    return (
-      <Screen centered>
-        <ThemedText type="subtitle">Welcome back</ThemedText>
-        <ThemedText themeColor="textSecondary" style={styles.subtle}>
-          Logged in as {session.user.email}
-        </ThemedText>
-        <View style={styles.stack}>
-          <AppButton title="My Books" onPress={() => router.navigate('/books')} />
-          <AppButton title="Log out" variant="secondary" onPress={signOut} />
-        </View>
-      </Screen>
-    );
+    return <ActivityFeed onSignOut={signOut} />;
   }
 
   return (
@@ -98,6 +87,5 @@ export default function Index() {
 
 const styles = StyleSheet.create({
   brand: { marginBottom: 24 },
-  subtle: { marginTop: 4 },
   stack: { gap: 12, marginTop: 24 },
 });

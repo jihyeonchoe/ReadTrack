@@ -29,6 +29,11 @@ export default function AppTabs() {
         <NativeTabs.Trigger.Icon sf={{ default: 'book', selected: 'book.fill' }} md="menu_book" />
       </NativeTabs.Trigger>
 
+      <NativeTabs.Trigger name="record" hidden={loggedOut}>
+        <NativeTabs.Trigger.Label>Record</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="stopwatch" md="timer" />
+      </NativeTabs.Trigger>
+
       <NativeTabs.Trigger name="stats" hidden={loggedOut}>
         <NativeTabs.Trigger.Label>Stats</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="chart.bar" md="bar_chart" />
@@ -39,10 +44,6 @@ export default function AppTabs() {
         <NativeTabs.Trigger.Icon sf={{ default: 'person.2', selected: 'person.2.fill' }} md="group" />
       </NativeTabs.Trigger>
 
-      <NativeTabs.Trigger name="feed" hidden={loggedOut}>
-        <NativeTabs.Trigger.Label>Feed</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon sf="list.bullet" md="dynamic_feed" />
-      </NativeTabs.Trigger>
     </NativeTabs>
   );
 }
