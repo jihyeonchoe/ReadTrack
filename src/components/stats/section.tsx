@@ -20,7 +20,7 @@ export function Section({ title, right, children, style, ...rest }: ViewProps & 
 }
 
 const styles = StyleSheet.create({
-  card: { borderTopWidth: StyleSheet.hairlineWidth, paddingTop: 20, paddingBottom: 32, gap: 16 },
+  card: { borderTopWidth: 1, paddingTop: 20, paddingBottom: 32, gap: 16 },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 8 },
   title: { fontSize: 20, lineHeight: 26 },
 });

@@ -19,14 +19,9 @@ export default function AppTabs() {
         default: { color: colors.textSecondary },
         selected: { color: colors.text },
       }}>
-      <NativeTabs.Trigger name="index">
+      <NativeTabs.Trigger name="(home)">
         <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf={{ default: 'house', selected: 'house.fill' }} md="home" />
-      </NativeTabs.Trigger>
-
-      <NativeTabs.Trigger name="books" hidden={loggedOut}>
-        <NativeTabs.Trigger.Label>My Books</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon sf={{ default: 'book', selected: 'book.fill' }} md="menu_book" />
       </NativeTabs.Trigger>
 
       <NativeTabs.Trigger name="record" hidden={loggedOut}>
@@ -34,14 +29,17 @@ export default function AppTabs() {
         <NativeTabs.Trigger.Icon sf="stopwatch" md="timer" />
       </NativeTabs.Trigger>
 
-      <NativeTabs.Trigger name="stats" hidden={loggedOut}>
-        <NativeTabs.Trigger.Label>Stats</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon sf="chart.bar" md="bar_chart" />
+      <NativeTabs.Trigger name="books" hidden={loggedOut}>
+        <NativeTabs.Trigger.Label>My Books</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf={{ default: 'book', selected: 'book.fill' }} md="menu_book" />
       </NativeTabs.Trigger>
 
-      <NativeTabs.Trigger name="people" hidden={loggedOut}>
-        <NativeTabs.Trigger.Label>People</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon sf={{ default: 'person.2', selected: 'person.2.fill' }} md="group" />
+      <NativeTabs.Trigger name="profile" hidden={loggedOut}>
+        <NativeTabs.Trigger.Label>Profile</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon
+          sf={{ default: 'person.crop.circle', selected: 'person.crop.circle.fill' }}
+          md="account_circle"
+        />
       </NativeTabs.Trigger>
 
     </NativeTabs>

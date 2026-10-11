@@ -15,11 +15,14 @@ export function BarChart({
   bars,
   unit = 'min',
   unitOne,
+  onOpen,
 }: {
   bars: Bar[];
   unit?: string;
   /** Singular unit, e.g. "book" — used when the value is 1. */
   unitOne?: string;
+  /** If given, tapping a bar opens it (e.g. that day's detail) instead of just selecting it. */
+  onOpen?: (bar: Bar) => void;
 }) {
   const theme = useTheme();
   const unitFor = (n: number) => (n === 1 && unitOne ? unitOne : unit);
@@ -40,7 +43,10 @@ export function BarChart({
           return (
             <Pressable
               key={i}
-              onPress={() => setSelected(i)}
+              onPress={() => {
+                setSelected(i);
+                onOpen?.(b);
+              }}
               accessibilityRole="button"
               accessibilityLabel={`${b.fullLabel ?? b.label}: ${b.value} ${unitFor(b.value)}`}
               style={styles.slot}>

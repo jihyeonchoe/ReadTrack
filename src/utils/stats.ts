@@ -12,7 +12,9 @@ export type StatSession = {
 
 export type StatBook = {
   id: string;
+  title: string;
   status: string;
+  total_pages: number | null;
   finished_at: string | null;
 };
 
@@ -56,7 +58,7 @@ export function getPeriod(mode: Mode, now = new Date()): Period {
       prevStart: localDateString(new Date(y, m - 1, 1)),
       prevEnd: localDateString(new Date(y, m, 0)),
       label: now.toLocaleDateString(undefined, { month: 'long', year: 'numeric' }),
-      prevLabel: 'last month',
+      prevLabel: 'previous month',
     };
   }
   return {
@@ -65,7 +67,7 @@ export function getPeriod(mode: Mode, now = new Date()): Period {
     prevStart: `${y - 1}-01-01`,
     prevEnd: `${y - 1}-12-31`,
     label: String(y),
-    prevLabel: 'last year',
+    prevLabel: 'previous year',
   };
 }
 
@@ -112,6 +114,8 @@ export type Bar = {
   fullLabel?: string; // shown when the bar is selected, e.g. "Jan"
   value: number;
   current: boolean;
+  /** YYYY-MM-DD, for day bars (weekly chart). */
+  date?: string;
 };
 
 /** Minutes read on each day of the current week, Monday first. */
@@ -123,7 +127,7 @@ export function weekBars(sessions: StatSession[], now = new Date()): Bar[] {
     const value = sessions
       .filter((s) => s.session_date === date)
       .reduce((sum, s) => sum + (s.minutes ?? 0), 0);
-    return { label, value, current: date === today };
+    return { label, value, current: date === today, date };
   });
 }
 
@@ -254,6 +258,80 @@ export function records(sessions: StatSession[]): Records {
   const mostPagesInDay = Math.max(0, ...Object.values(pagesByDay)) || null;
 
   return { longestSession, mostMinutesInDay, mostPagesInDay };
+}
+
+// ---------- reading pattern ----------
+
+const WEEKDAYS = ['Sundays', 'Mondays', 'Tuesdays', 'Wednesdays', 'Thursdays', 'Fridays', 'Saturdays'];
+
+export type Pattern = {
+  bestTime: string | null; // e.g. "Evening"
+  bestDay: string | null; // e.g. "Sundays"
+  averageSession: number | null; // minutes
+};
+
+/** When you read most (time of day, day of week) and how long a typical session is. All time. */
+export function readingPattern(sessions: StatSession[]): Pattern {
+  const times = timeOfDay(sessions, '0000-01-01', '9999-12-31');
+  const topTime = times.reduce((a, b) => (b.value > a.value ? b : a));
+  const bestTime = topTime.value > 0 ? topTime.label.split(' · ')[0] : null;
+
+  const byDay = Array(7).fill(0) as number[];
+  for (const s of sessions) {
+    const [y, m, d] = s.session_date.split('-').map(Number);
+    byDay[new Date(y, m - 1, d).getDay()] += s.minutes ?? 0;
+  }
+  const max = Math.max(...byDay);
+  const bestDay = max > 0 ? WEEKDAYS[byDay.indexOf(max)] : null;
+
+  const timed = sessions.filter((s) => s.minutes);
+  const averageSession = timed.length
+    ? Math.round(timed.reduce((sum, s) => sum + s.minutes!, 0) / timed.length)
+    : null;
+
+  return { bestTime, bestDay, averageSession };
+}
+
+// ---------- more personal records ----------
+
+/** Most books finished in a single calendar month. */
+export function mostBooksInMonth(finished: string[]): number | null {
+  const byMonth: Record<string, number> = {};
+  for (const d of finished) byMonth[d.slice(0, 7)] = (byMonth[d.slice(0, 7)] ?? 0) + 1;
+  return Math.max(0, ...Object.values(byMonth)) || null;
+}
+
+/** The longest finished book (most pages). */
+export function longestBook(books: StatBook[]): StatBook | null {
+  const done = books.filter((b) => b.status === 'finished' && b.total_pages);
+  return done.length ? done.reduce((a, b) => (b.total_pages! > a.total_pages! ? b : a)) : null;
+}
+
+/**
+ * Fewest days to finish a book of at least `minPages` pages: from its first session
+ * to the day it was finished (inclusive).
+ */
+export function fastestBook(
+  books: StatBook[],
+  sessions: StatSession[],
+  minPages = 300
+): { book: StatBook; days: number } | null {
+  const firstSession: Record<string, string> = {};
+  for (const s of sessions) {
+    if (!firstSession[s.book_id] || s.session_date < firstSession[s.book_id]) {
+      firstSession[s.book_id] = s.session_date;
+    }
+  }
+  let best: { book: StatBook; days: number } | null = null;
+  for (const b of books) {
+    if (b.status !== 'finished' || !b.finished_at || (b.total_pages ?? 0) < minPages) continue;
+    const start = firstSession[b.id];
+    if (!start) continue;
+    const end = localDateString(new Date(b.finished_at));
+    const days = Math.round((parseLocal(end).getTime() - parseLocal(start).getTime()) / 86_400_000) + 1;
+    if (days > 0 && (!best || days < best.days)) best = { book: b, days };
+  }
+  return best;
 }
 
 // ---------- goals ----------

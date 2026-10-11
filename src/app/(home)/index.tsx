@@ -7,7 +7,7 @@ import { Screen } from '@/components/screen';
 import { TextField } from '@/components/text-field';
 import { ThemedText } from '@/components/themed-text';
 import { useSession } from '@/hooks/use-session';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../../../lib/supabase';
 
 export default function Index() {
   const { session } = useSession();
@@ -42,12 +42,9 @@ export default function Index() {
     if (error) Alert.alert('Log in problem', error.message);
   }
 
-  async function signOut() {
-    await supabase.auth.signOut();
-  }
 
   if (session) {
-    return <ActivityFeed onSignOut={signOut} />;
+    return <ActivityFeed />;
   }
 
   return (

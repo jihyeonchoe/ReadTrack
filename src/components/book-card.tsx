@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { AppButton } from '@/components/app-button';
 import { ProgressBar } from '@/components/progress-bar';
 import { ThemedText } from '@/components/themed-text';
+import { readersLabel, useReadersCount } from '@/hooks/use-readers-count';
 import { useTheme } from '@/hooks/use-theme';
 
 export type Book = {
@@ -12,6 +13,7 @@ export type Book = {
   pages_read: number;
   total_pages: number | null;
   genre: string | null;
+  google_id?: string | null;
 };
 
 type BookCardProps = {
@@ -23,7 +25,10 @@ type BookCardProps = {
   onMarkFinished: () => void;
 };
 
-/** A book that is currently being read: title, progress, one main action and quiet secondary links. */
+/**
+ * Compact card for a book in progress (Record tab): title and progress on the left,
+ * a small round ▶ on the right, quiet links underneath. About four fit on one screen.
+ */
 export function BookCard({
   book,
   onOpen,
@@ -33,41 +38,42 @@ export function BookCard({
   onMarkFinished,
 }: BookCardProps) {
   const theme = useTheme();
+  const readers = useReadersCount(book.google_id);
   const total = book.total_pages;
   const percent = total ? Math.min(100, Math.round((book.pages_read / total) * 100)) : null;
 
   return (
     <View style={[styles.card, { borderColor: theme.border }]}>
-      <Pressable
-        onPress={onOpen}
-        accessibilityRole="button"
-        accessibilityHint="Opens your reading log for this book"
-        style={({ pressed }) => [styles.titleRow, pressed && styles.pressed]}>
-        <ThemedText type="serif" style={styles.title}>
-          {book.title}
-        </ThemedText>
-        <ThemedText themeColor="textSecondary">›</ThemedText>
-      </Pressable>
+      <View style={styles.top}>
+        <Pressable
+          onPress={onOpen}
+          accessibilityRole="button"
+          accessibilityHint="Opens your reading log for this book"
+          style={({ pressed }) => [styles.info, pressed && styles.pressed]}>
+          <ThemedText type="serif" style={styles.title} numberOfLines={2}>
+            {book.title}
+          </ThemedText>
+          <ThemedText type="small" themeColor="textSecondary">
+            {percent !== null ? `${percent}% · ${book.pages_read}/${total} pages` : `${book.pages_read} pages read`}
+            {readers > 0 ? ` · ${readersLabel(readers)}` : ''}
+          </ThemedText>
+        </Pressable>
 
-      {percent !== null ? (
-        <View style={styles.progress}>
-          <ProgressBar percent={percent} label={`${book.title}: ${percent}% read`} />
-          <View style={styles.progressText}>
-            <ThemedText type="small" themeColor="textSecondary">
-              {book.pages_read} of {total} pages
-            </ThemedText>
-            <ThemedText type="small">{percent}%</ThemedText>
-          </View>
-        </View>
-      ) : (
-        <ThemedText type="small" themeColor="textSecondary">
-          {book.pages_read} pages read
-        </ThemedText>
-      )}
-
-      <View style={styles.main}>
-        <AppButton title="Start reading" onPress={onStartTimer} />
+        <Pressable
+          onPress={onStartTimer}
+          accessibilityRole="button"
+          accessibilityLabel={`Start reading ${book.title}`}
+          hitSlop={8}
+          style={({ pressed }) => [
+            styles.start,
+            { borderColor: theme.text },
+            pressed && styles.startPressed,
+          ]}>
+          <ThemedText style={styles.startIcon}>▶</ThemedText>
+        </Pressable>
       </View>
+
+      {percent !== null && <ProgressBar percent={percent} label={`${book.title}: ${percent}% read`} />}
 
       <View style={styles.links}>
         <AppButton title="Log manually" variant="text" onPress={onLogSession} />
@@ -79,12 +85,20 @@ export function BookCard({
 }
 
 const styles = StyleSheet.create({
-  card: { borderWidth: StyleSheet.hairlineWidth, borderRadius: 16, padding: 20, gap: 12, marginBottom: 16 },
-  titleRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 },
-  title: { flexShrink: 1, fontSize: 21, lineHeight: 28 },
+  card: { borderWidth: 1, borderRadius: 16, paddingHorizontal: 16, paddingTop: 14, paddingBottom: 2, gap: 10, marginBottom: 12 },
+  top: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  info: { flex: 1, gap: 2 },
+  title: { fontSize: 18, lineHeight: 24 },
   pressed: { opacity: 0.6 },
-  progress: { gap: 8 },
-  progressText: { flexDirection: 'row', justifyContent: 'space-between' },
-  main: { marginTop: 4 },
-  links: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', columnGap: 24, marginTop: -4 },
+  start: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    borderWidth: 1.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  startPressed: { opacity: 0.6, transform: [{ scale: 0.95 }] },
+  startIcon: { fontSize: 15, lineHeight: 18, marginLeft: 2 },
+  links: { flexDirection: 'row', flexWrap: 'wrap', columnGap: 20 },
 });

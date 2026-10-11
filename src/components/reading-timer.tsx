@@ -3,6 +3,7 @@ import { Modal, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppButton } from '@/components/app-button';
+import { NoteField } from '@/components/note-field';
 import { TextField } from '@/components/text-field';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -121,7 +122,7 @@ export function ReadingTimer({ bookTitle, onSave, onDiscard }: ReadingTimerProps
                 keyboardType="number-pad"
                 autoFocus
               />
-              <TextField placeholder="Note (optional)" value={note} onChangeText={setNote} />
+              <NoteField value={note} onChangeText={setNote} />
               <AppButton title={saving ? 'Saving…' : 'Save session'} onPress={save} disabled={saving} />
               <AppButton title="Back to timer" variant="secondary" onPress={resume} />
               <AppButton title="Discard" variant="secondary" onPress={onDiscard} />

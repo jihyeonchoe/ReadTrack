@@ -1,12 +1,13 @@
 import { useCallback, useState } from 'react';
-import { useFocusEffect } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { Alert, FlatList, Pressable, StyleSheet, View } from 'react-native';
 
+import { Avatar } from '@/components/avatar';
 import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
 import { useTheme } from '@/hooks/use-theme';
 import { formatDay, formatDuration } from '@/utils/reading';
-import { formatPageProgress, progressBySession, type Progress } from '@/utils/sessions';
+import { progressBySession, type Progress } from '@/utils/sessions';
 import { supabase } from '../../lib/supabase';
 
 type FeedItem = {
@@ -22,13 +23,17 @@ type FeedItem = {
   profiles: { username: string } | null;
 };
 
-/** Home screen: recent reading sessions from you and the readers you follow. */
-export function ActivityFeed({ onSignOut }: { onSignOut: () => void }) {
+/**
+ * Home screen: books you and the readers you follow have been reading — one card per book,
+ * showing totals so far. Tap a card to see every session.
+ */
+export function ActivityFeed() {
   const theme = useTheme();
   const [items, setItems] = useState<FeedItem[]>([]);
-  const [myId, setMyId] = useState<string | null>(null);
   // session id → pages/minutes reached in that book after the session
   const [reached, setReached] = useState<Record<string, Progress>>({});
+  // book id → total number of sessions logged for it
+  const [sessionCounts, setSessionCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
 
   useFocusEffect(
@@ -45,7 +50,6 @@ export function ActivityFeed({ onSignOut }: { onSignOut: () => void }) {
       setLoading(false);
       return;
     }
-    setMyId(currentUserId);
 
     const { data: followData, error: followError } = await supabase
       .from('follows')
@@ -80,24 +84,31 @@ export function ActivityFeed({ onSignOut }: { onSignOut: () => void }) {
           .select('id, book_id, pages, minutes, session_date, created_at')
           .in('book_id', bookIds);
         setReached(progressBySession(all ?? []));
+        const counts: Record<string, number> = {};
+        for (const s of all ?? []) counts[s.book_id] = (counts[s.book_id] ?? 0) + 1;
+        setSessionCounts(counts);
       }
     }
     setLoading(false);
+  }
+
+  // One card per book: keep each book's most recent session (items are newest first).
+  const groups: FeedItem[] = [];
+  const seen = new Set<string>();
+  for (const item of items) {
+    if (seen.has(item.book_id)) continue;
+    seen.add(item.book_id);
+    groups.push(item);
   }
 
   return (
     <Screen>
       <View style={styles.header}>
         <ThemedText type="subtitle">ReadTrack</ThemedText>
-        <Pressable onPress={onSignOut} accessibilityRole="button" hitSlop={12}>
-          <ThemedText type="small" themeColor="textSecondary">
-            Log out
-          </ThemedText>
-        </Pressable>
       </View>
 
       <FlatList
-        data={items}
+        data={groups}
         keyExtractor={(item) => item.id}
         refreshing={loading}
         onRefresh={loadFeed}
@@ -112,32 +123,46 @@ export function ActivityFeed({ onSignOut }: { onSignOut: () => void }) {
         }
         renderItem={({ item }) => {
           const r = reached[item.id];
-          const name = item.user_id === myId ? 'You' : (item.profiles?.username ?? 'Someone');
+          const name = item.profiles?.username ?? 'Someone';
           return (
-            <View style={[styles.card, { borderColor: theme.border }]}>
+            <Pressable
+              onPress={() => router.push({ pathname: '/book/[id]', params: { id: item.book_id } })}
+              accessibilityRole="button"
+              accessibilityHint="Opens this book"
+              style={({ pressed }) => [
+                styles.card,
+                { borderColor: theme.border },
+                pressed && styles.pressed,
+              ]}>
               <View style={styles.cardTop}>
-                <ThemedText type="small">{name}</ThemedText>
-                <ThemedText type="small" themeColor="textSecondary">
-                  {formatDay(item.session_date)}
-                </ThemedText>
+                <Avatar name={name} />
+                <View style={styles.who}>
+                  <ThemedText type="smallBold">{name}</ThemedText>
+                  <ThemedText type="small" themeColor="textSecondary">
+                    {formatDay(item.session_date)}
+                  </ThemedText>
+                </View>
               </View>
               <ThemedText type="serif" style={styles.bookTitle}>
                 {item.books?.title ?? 'A book'}
               </ThemedText>
 
               <View style={styles.metrics}>
-                <Metric label="Time" value={item.minutes ? `${item.minutes} min` : '–'} />
+                <Metric
+                  label="Total reading"
+                  value={r?.minutes ? formatDuration(r.minutes) : '–'}
+                />
                 <Metric
                   label="Pages"
                   value={
-                    item.pages && r
-                      ? formatPageProgress(r.pages, item.books?.total_pages)
-                      : item.pages
-                        ? `${item.pages} pages`
-                        : '–'
+                    r?.pages
+                      ? item.books?.total_pages
+                        ? `${r.pages}/${item.books.total_pages}`
+                        : String(r.pages)
+                      : '–'
                   }
                 />
-                <Metric label="Total reading" value={r?.minutes ? formatDuration(r.minutes) : '–'} />
+                <Metric label="Sessions" value={String(sessionCounts[item.book_id] ?? 1)} />
               </View>
 
               {item.note ? (
@@ -145,7 +170,7 @@ export function ActivityFeed({ onSignOut }: { onSignOut: () => void }) {
                   “{item.note}”
                 </ThemedText>
               ) : null}
-            </View>
+            </Pressable>
           );
         }}
       />
@@ -156,10 +181,12 @@ export function ActivityFeed({ onSignOut }: { onSignOut: () => void }) {
 function Metric({ label, value }: { label: string; value: string }) {
   return (
     <View style={styles.metric}>
-      <ThemedText type="small" themeColor="textSecondary">
+      <ThemedText type="number" style={styles.metricValue}>
+        {value}
+      </ThemedText>
+      <ThemedText type="small" themeColor="textSecondary" style={styles.metricLabel}>
         {label}
       </ThemedText>
-      <ThemedText style={styles.metricValue}>{value}</ThemedText>
     </View>
   );
 }
@@ -173,10 +200,13 @@ const styles = StyleSheet.create({
   },
   listContent: { paddingBottom: 48, flexGrow: 1 },
   empty: { textAlign: 'center', marginTop: 48 },
-  card: { borderBottomWidth: StyleSheet.hairlineWidth, paddingVertical: 24, gap: 8 },
-  cardTop: { flexDirection: 'row', justifyContent: 'space-between', gap: 8 },
+  pressed: { opacity: 0.6 },
+  card: { borderBottomWidth: 1, paddingVertical: 24, gap: 8 },
+  cardTop: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 6 },
+  who: { flex: 1 },
   bookTitle: { fontSize: 22, lineHeight: 29 },
-  metrics: { flexDirection: 'row', gap: 28, marginTop: 6 },
+  metrics: { flexDirection: 'row', gap: 28, marginTop: 10 },
   metric: { gap: 2 },
-  metricValue: { fontSize: 17, lineHeight: 22 },
+  metricValue: { fontSize: 26, lineHeight: 32 },
+  metricLabel: { fontSize: 12, lineHeight: 16 },
 });

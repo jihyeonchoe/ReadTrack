@@ -125,7 +125,7 @@ Use the installed design skills when appropriate:
 | Background | `#FAFAF9` | `#141414` |
 | Text (soft off-black, never pure black) | `#1F1F1F` | `#ECECEC` |
 | Secondary text | `#71717A` | `#A1A1AA` |
-| Border (hairline) | `#E7E7E4` | `#262626` |
+| Border (1px) | `#D6D6D2` | `#333333` |
 
 Colors live in `src/constants/theme.ts`. No accent color.
 

@@ -88,7 +88,7 @@ export function GoalCard({ title, done, goal, unit, elapsed, onEdit }: GoalCardP
 }
 
 const styles = StyleSheet.create({
-  card: { flex: 1, minWidth: 220, borderWidth: StyleSheet.hairlineWidth, borderRadius: 16, padding: 20, gap: 10 },
+  card: { flex: 1, minWidth: 220, borderWidth: 1, borderRadius: 16, padding: 20, gap: 10 },
   empty: { justifyContent: 'center', minHeight: 132 },
   top: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   numbers: { flexDirection: 'row', alignItems: 'baseline', gap: 8 },

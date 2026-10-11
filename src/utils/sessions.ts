@@ -10,14 +10,16 @@ export async function saveSession(
   book: BookRef,
   minutes: number | null,
   pages: number | null,
-  note: string | null
+  note: string | null,
+  /** YYYY-MM-DD; defaults to today. Used when logging a past day from the calendar. */
+  date: string = localDateString()
 ): Promise<boolean> {
   const { data: userData } = await supabase.auth.getUser();
 
   const { error } = await supabase.from('reading_sessions').insert({
     user_id: userData.user?.id,
     book_id: book.id,
-    session_date: localDateString(),
+    session_date: date,
     minutes,
     pages,
     note,
