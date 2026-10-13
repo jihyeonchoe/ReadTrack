@@ -6,10 +6,10 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useTheme } from '@/hooks/use-theme';
 import { localDateString } from '@/utils/reading';
 
-// Reading-intensity shades, lightest to darkest — grays only, never black.
+// Reading-intensity shades, lightest to darkest, from the gray palette.
 const HEAT = {
-  light: ['#EDEDEA', '#DCDCD8', '#C4C4BF', '#A8A8A3'],
-  dark: ['#242424', '#303030', '#3D3D3D', '#4D4D4D'],
+  light: ['#E6E6E6', '#D9D9D9', '#BCBAB4', '#9C9993'], // Light Gray → Ash Gray
+  dark: ['#1C1C1C', '#2A2A2A', '#4A4844', '#6B6762'], // → Granite Gray
 };
 
 /** 0 = no reading, 1 = under 15 min, 2 = 15–30, 3 = 30–60, 4 = an hour or more. */
@@ -49,8 +49,11 @@ export function MonthCalendar({
   handlers.current = { onPrev, onNext };
   const swipe = useRef(
     PanResponder.create({
-      // Only claim clearly horizontal drags, so vertical scrolling still works.
-      onMoveShouldSetPanResponder: (_e, g) => Math.abs(g.dx) > 15 && Math.abs(g.dx) > Math.abs(g.dy) * 1.5,
+      // Only claim clearly horizontal drags, so vertical scrolling and tapping a day still work.
+      // "Capture" lets the calendar take the gesture even when it starts on a day button.
+      onMoveShouldSetPanResponderCapture: (_e, g) =>
+        Math.abs(g.dx) > 12 && Math.abs(g.dx) > Math.abs(g.dy) * 1.5,
+      onPanResponderTerminationRequest: () => false,
       onPanResponderRelease: (_e, g) => {
         if (g.dx > 50) handlers.current.onPrev?.();
         else if (g.dx < -50) handlers.current.onNext?.();
@@ -128,7 +131,15 @@ const styles = StyleSheet.create({
   head: { width: `${100 / 7}%`, textAlign: 'center' },
   grid: { flexDirection: 'row', flexWrap: 'wrap' },
   cell: { width: `${100 / 7}%`, aspectRatio: 1, padding: 3 },
-  day: { flex: 1, borderRadius: 999, alignItems: 'center', justifyContent: 'center', gap: 2 },
+  day: {
+    width: '100%',
+    aspectRatio: 1,
+    borderRadius: 999,
+    overflow: 'hidden',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 2,
+  },
   mark: { width: 4, height: 4, borderRadius: 2 },
   pressed: { opacity: 0.5 },
 });

@@ -169,7 +169,7 @@ export default function Stats() {
         {/* Streak */}
         <Section title="Streak">
           <View style={styles.tiles}>
-            <Tile value={`${streak} 🔥`} label={streak === 1 ? 'day in a row' : 'days in a row'} big />
+            <Tile value={String(streak)} label={streak === 1 ? 'day in a row' : 'days in a row'} big />
             <Tile value={String(longest)} label="longest streak" />
           </View>
         </Section>
@@ -424,7 +424,7 @@ const styles = StyleSheet.create({
   navDisabled: { opacity: 0.25 },
   navArrow: { fontSize: 28, lineHeight: 32 },
   periodLabel: { fontSize: 20, lineHeight: 26 },
-  groupTitle: { fontSize: 26, lineHeight: 32, marginTop: 32, marginBottom: 16 },
+  groupTitle: { fontSize: 21, lineHeight: 28, marginTop: 40, marginBottom: 12 },
   patternLine: { gap: 2 },
   patternValue: { fontSize: 22, lineHeight: 28 },
   recordRow: {
@@ -440,7 +440,7 @@ const styles = StyleSheet.create({
   recordValue: { fontSize: 20, lineHeight: 26 },
   tiles: { flexDirection: 'row', flexWrap: 'wrap', rowGap: 24 },
   tile: { width: '50%', paddingRight: 8, gap: 2 },
-  tileValue: { fontSize: 28, lineHeight: 34 },
-  tileBig: { fontSize: 44, lineHeight: 50 },
+  tileValue: { fontSize: 22, lineHeight: 28 },
+  tileBig: { fontSize: 34, lineHeight: 42 },
   change: { fontSize: 12, lineHeight: 16 },
 });

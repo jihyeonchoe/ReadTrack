@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   stat: { flex: 1, alignItems: 'center' },
-  statValue: { fontSize: 24, lineHeight: 30 },
+  statValue: { fontSize: 20, lineHeight: 26 },
   empty: { marginTop: 32, textAlign: 'center' },
   row: { paddingVertical: 16, borderBottomWidth: 1, gap: 4 },
   title: { fontSize: 18, lineHeight: 24 },

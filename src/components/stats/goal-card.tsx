@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
   empty: { justifyContent: 'center', minHeight: 132 },
   top: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   numbers: { flexDirection: 'row', alignItems: 'baseline', gap: 8 },
-  pct: { fontSize: 44, lineHeight: 50 },
+  pct: { fontSize: 34, lineHeight: 42 },
   track: { height: 6, borderRadius: 3, overflow: 'visible', justifyContent: 'center' },
   fill: { height: '100%', borderRadius: 3 },
   marker: { position: 'absolute', width: 2, height: 16, top: -5, marginLeft: -1, borderRadius: 1 },

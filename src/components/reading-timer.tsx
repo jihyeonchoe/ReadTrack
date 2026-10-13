@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
   clockWrap: { flex: 1, alignItems: 'center', justifyContent: 'center', minHeight: 160 },
   clock: {
     fontSize: 80,
-    lineHeight: 92,
+    lineHeight: 96,
     fontWeight: '200',
     fontVariant: ['tabular-nums'],
   },

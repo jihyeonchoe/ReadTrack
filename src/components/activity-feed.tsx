@@ -204,9 +204,9 @@ const styles = StyleSheet.create({
   card: { borderBottomWidth: 1, paddingVertical: 24, gap: 8 },
   cardTop: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 6 },
   who: { flex: 1 },
-  bookTitle: { fontSize: 22, lineHeight: 29 },
-  metrics: { flexDirection: 'row', gap: 28, marginTop: 10 },
+  bookTitle: { fontSize: 18, lineHeight: 24 },
+  metrics: { flexDirection: 'row', gap: 24, marginTop: 6 },
   metric: { gap: 2 },
-  metricValue: { fontSize: 26, lineHeight: 32 },
-  metricLabel: { fontSize: 12, lineHeight: 16 },
+  metricValue: { fontSize: 18, lineHeight: 24 },
+  metricLabel: { fontSize: 11, lineHeight: 14 },
 });

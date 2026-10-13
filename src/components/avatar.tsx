@@ -1,7 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { Fonts } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 /** Profile picture placeholder: the first letter of the name in a circle. */
@@ -18,7 +17,6 @@ export function Avatar({ name, size = 36 }: { name: string; size?: number }) {
       <ThemedText
         style={{
           color: theme.background,
-          fontFamily: Fonts.serif,
           fontSize: size * 0.45,
           lineHeight: size * 0.6,
         }}>

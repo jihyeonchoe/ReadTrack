@@ -1,10 +1,8 @@
 import { useCallback, useState } from 'react';
 import { useFocusEffect } from 'expo-router';
-import { Image } from 'expo-image';
 import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { AppButton } from '@/components/app-button';
-import { CoverPicker } from '@/components/cover-picker';
 import { type Book } from '@/components/book-card';
 import { ProgressBar } from '@/components/progress-bar';
 import { ThemedText } from '@/components/themed-text';
@@ -13,7 +11,6 @@ import { MaxContentWidth } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { formatDay, formatDuration } from '@/utils/reading';
 import { formatPageProgress, progressBySession } from '@/utils/sessions';
-import { type FoundBook } from '@/utils/book-search';
 import { GENRES } from '@/utils/stats';
 import { readersLabel, useReadersCount } from '@/hooks/use-readers-count';
 import { supabase } from '../../lib/supabase';
@@ -28,7 +25,7 @@ type SessionRow = {
 };
 
 /**
- * One book's reading log: cover, progress, genre and every session grouped by day.
+ * One book's reading log: progress, genre and every session grouped by day.
  * Other readers' books (opened from the feed) are shown read-only.
  */
 export function BookLog({ id }: { id: string | undefined }) {
@@ -46,7 +43,6 @@ export function BookLog({ id }: { id: string | undefined }) {
   >(null);
   const [sessions, setSessions] = useState<SessionRow[]>([]);
   const [loading, setLoading] = useState(true);
-  const [pickingCover, setPickingCover] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -78,21 +74,6 @@ export function BookLog({ id }: { id: string | undefined }) {
     if (sessionRes.error) Alert.alert('Error loading sessions', sessionRes.error.message);
     else setSessions(sessionRes.data ?? []);
     setLoading(false);
-  }
-
-  /** Saves the chosen cover, and fills in author / page count if they were missing. */
-  async function useCover(found: FoundBook) {
-    if (!book) return;
-    setPickingCover(false);
-    const changes = {
-      cover_url: found.cover,
-      google_id: found.id,
-      ...(book.author ? {} : { author: found.author }),
-      ...(book.total_pages || !found.pages ? {} : { total_pages: found.pages }),
-    };
-    const { error } = await supabase.from('books').update(changes).eq('id', book.id);
-    if (error) Alert.alert('Error saving cover', error.message);
-    else setBook({ ...book, ...changes });
   }
 
   async function startReading() {
@@ -143,24 +124,6 @@ export function BookLog({ id }: { id: string | undefined }) {
   return (
     <ThemedView style={styles.fill}>
       <ScrollView contentContainerStyle={styles.content}>
-        {book.cover_url ? (
-          <Pressable
-            disabled={!isMine}
-            onPress={() => setPickingCover(true)}
-            accessibilityRole="button"
-            accessibilityLabel={`Cover of ${book.title}. Tap to change`}>
-            <Image
-              source={book.cover_url}
-              style={[styles.cover, { backgroundColor: theme.backgroundElement }]}
-              contentFit="cover"
-              transition={200}
-            />
-          </Pressable>
-        ) : isMine ? (
-          <View style={styles.findCover}>
-            <AppButton title="Find cover" variant="text" onPress={() => setPickingCover(true)} />
-          </View>
-        ) : null}
         <ThemedText type="small" themeColor="textSecondary">
           {book.status === 'finished'
             ? 'FINISHED'
@@ -294,12 +257,6 @@ export function BookLog({ id }: { id: string | undefined }) {
         )}
       </ScrollView>
 
-      <CoverPicker
-        visible={pickingCover && isMine}
-        initialQuery={[book.title, book.author].filter(Boolean).join(' ')}
-        onPick={useCover}
-        onClose={() => setPickingCover(false)}
-      />
     </ThemedView>
   );
 }
@@ -344,15 +301,6 @@ const styles = StyleSheet.create({
   author: { marginTop: 4 },
   readers: { marginTop: 8 },
   genreText: { marginTop: 16 },
-  findCover: { alignItems: 'center', marginBottom: 12 },
-  cover: {
-    width: 128,
-    height: 192,
-    borderRadius: 6,
-    alignSelf: 'center',
-    marginTop: 8,
-    marginBottom: 28,
-  },
   progress: { gap: 8, marginTop: 20 },
   info: { marginTop: 24 },
   infoRow: {
@@ -379,7 +327,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   stat: { flex: 1, alignItems: 'center' },
-  statValue: { fontSize: 24, lineHeight: 30 },
+  statValue: { fontSize: 20, lineHeight: 26 },
   empty: { marginVertical: 32, textAlign: 'center' },
   day: { marginTop: 28 },
   row: { paddingVertical: 14, borderBottomWidth: 1, gap: 4 },

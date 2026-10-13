@@ -140,9 +140,14 @@ export default function Profile() {
         style={({ pressed }) => [styles.week, { borderColor: theme.border }, pressed && styles.pressed]}>
         <View style={styles.weekTop}>
           <ThemedText type="serif" style={styles.weekTitle}>
+            Stats
+          </ThemedText>
+          <ThemedText type="label" themeColor="textSecondary">
             This week
           </ThemedText>
-          <ThemedText type="small">Stats ›</ThemedText>
+          <ThemedText themeColor="textSecondary" style={styles.chevron}>
+            ›
+          </ThemedText>
         </View>
         <View style={styles.weekNumbers}>
           <WeekStat value={formatDuration(week.minutes)} label="reading" />
@@ -151,7 +156,7 @@ export default function Profile() {
         </View>
       </Pressable>
 
-      <ThemedText type="serif" style={styles.sectionTitle}>
+      <ThemedText type="label" themeColor="textSecondary" style={styles.sectionTitle}>
         Recent reading
       </ThemedText>
 
@@ -235,7 +240,7 @@ function Count({ value, label, onPress }: { value: number; label: string; onPres
 const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
   identity: { flexDirection: 'row', alignItems: 'center', gap: 16, flexShrink: 1 },
-  name: { flexShrink: 1, fontSize: 26, lineHeight: 32 },
+  name: { flexShrink: 1, fontSize: 22, lineHeight: 30 },
   counts: {
     flexDirection: 'row',
     marginTop: 20,
@@ -244,13 +249,14 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   count: { flex: 1, alignItems: 'center', gap: 2 },
-  week: { marginTop: 20, padding: 18, borderWidth: 1, borderRadius: 16, gap: 14 },
-  weekTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' },
-  weekTitle: { fontSize: 20, lineHeight: 26 },
+  week: { paddingVertical: 20, borderBottomWidth: 1, gap: 14 },
+  weekTop: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  weekTitle: { fontSize: 22, lineHeight: 28 },
+  chevron: { marginLeft: 'auto' },
   weekNumbers: { flexDirection: 'row' },
   weekStat: { flex: 1, gap: 2 },
-  weekValue: { fontSize: 24, lineHeight: 30 },
-  sectionTitle: { fontSize: 20, lineHeight: 26, marginTop: 28, marginBottom: 8 },
+  weekValue: { fontSize: 20, lineHeight: 26 },
+  sectionTitle: { marginTop: 32, marginBottom: 4 },
   list: { paddingBottom: 64 },
   row: { paddingVertical: 16, borderBottomWidth: 1, gap: 4 },
   rowTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', gap: 12 },

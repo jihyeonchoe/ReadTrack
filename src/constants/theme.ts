@@ -7,22 +7,24 @@ import '@/global.css';
 
 import { Platform } from 'react-native';
 
+// Neutral gray palette: Jet Black #0B0B0B · White Smoke #F5F5F5 ·
+// Granite Gray #6B6762 · Ash Gray #BCBAB4 · Light Gray #D9D9D9
 export const Colors = {
   light: {
-    text: '#1F1F1F', // soft off-black, never pure black
-    background: '#FAFAF9',
-    backgroundElement: '#F1F1EF',
-    backgroundSelected: '#E6E6E3',
-    textSecondary: '#71717A',
-    border: '#D6D6D2',
+    text: '#0B0B0B', // Jet Black
+    background: '#F5F5F5', // White Smoke
+    backgroundElement: '#ECECEC',
+    backgroundSelected: '#D9D9D9', // Light Gray
+    textSecondary: '#6B6762', // Granite Gray
+    border: '#D9D9D9', // Light Gray
   },
   dark: {
-    text: '#ECECEC',
-    background: '#141414',
-    backgroundElement: '#1D1D1D',
-    backgroundSelected: '#2A2A2A',
-    textSecondary: '#A1A1AA',
-    border: '#333333',
+    text: '#F5F5F5',
+    background: '#0B0B0B',
+    backgroundElement: '#161616',
+    backgroundSelected: '#262626',
+    textSecondary: '#BCBAB4', // Ash Gray
+    border: '#2A2A2A',
   },
 } as const;
 

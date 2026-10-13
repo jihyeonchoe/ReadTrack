@@ -118,21 +118,24 @@ Use the installed design skills when appropriate:
 - UI UX Pro Max
 - Playwright CLI
 
-### Look & feel — calm, airy, editorial (black & white)
+### Look & feel — calm, airy, minimal, neutral grays
+
+Palette: Jet Black `#0B0B0B` · White Smoke `#F5F5F5` · Granite Gray `#6B6762` ·
+Ash Gray `#BCBAB4` · Light Gray `#D9D9D9`
 
 | Role | Light | Dark |
 |---|---|---|
-| Background | `#FAFAF9` | `#141414` |
-| Text (soft off-black, never pure black) | `#1F1F1F` | `#ECECEC` |
-| Secondary text | `#71717A` | `#A1A1AA` |
-| Border (1px) | `#D6D6D2` | `#333333` |
+| Background | `#F5F5F5` | `#0B0B0B` |
+| Text | `#0B0B0B` | `#F5F5F5` |
+| Secondary text | `#6B6762` | `#BCBAB4` |
+| Border | `#D9D9D9` | `#2A2A2A` |
 
 Colors live in `src/constants/theme.ts`. No accent color.
 
-Typography (`ThemedText` types):
-- `subtitle` / `serif` / `number` — system serif (New York on iOS) for page titles,
-  book titles, section headings and big numbers. Regular weight, never heavy.
-- `default` / `small` — light system sans (400) for body text; `smallBold` (600) sparingly.
+Typography (`ThemedText` types): one clean system sans (SF Pro on iPhone, close to Inter).
+- `subtitle` (26, semibold) page titles · `serif` (17, semibold; legacy name) book titles ·
+  `number` (22, semibold) stats · `label` small uppercase tracked labels ·
+  `default` / `small` body text.
 
 Layout rules:
 - Lots of white space; group with hairline dividers, not boxes. Cards only for

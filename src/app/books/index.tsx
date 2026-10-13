@@ -96,16 +96,16 @@ function ShelfHeader({ title, count, onSeeAll }: { title: string; count: number;
   return (
     <View style={[styles.header, { borderColor: theme.text }]} accessibilityRole="header">
       <View style={styles.headerLeft}>
-        <ThemedText type="serif" style={styles.headerTitle}>
-          {title}
-        </ThemedText>
-        <ThemedText type="small" themeColor="textSecondary">
+        <ThemedText type="label">{title}</ThemedText>
+        <ThemedText type="label" themeColor="textSecondary">
           {count}
         </ThemedText>
       </View>
       {onSeeAll && (
         <Pressable onPress={onSeeAll} accessibilityRole="button" hitSlop={12}>
-          <ThemedText type="small">See all ›</ThemedText>
+          <ThemedText type="label" themeColor="textSecondary">
+            See all
+          </ThemedText>
         </Pressable>
       )}
     </View>
@@ -118,12 +118,11 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'baseline',
+    alignItems: 'center',
     marginTop: 40,
     paddingBottom: 10,
     borderBottomWidth: 1,
   },
-  headerLeft: { flexDirection: 'row', alignItems: 'baseline', gap: 8 },
-  headerTitle: { fontSize: 22, lineHeight: 28 },
+  headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   empty: { paddingVertical: 16 },
 });

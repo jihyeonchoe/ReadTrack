@@ -12,6 +12,7 @@ export type ThemedTextProps = TextProps & {
     | 'subtitle'
     | 'serif'
     | 'number'
+    | 'label'
     | 'link'
     | 'linkPrimary'
     | 'code';
@@ -32,6 +33,7 @@ export function ThemedText({ style, type = 'default', themeColor, ...rest }: The
         type === 'subtitle' && styles.subtitle,
         type === 'serif' && styles.serif,
         type === 'number' && styles.number,
+        type === 'label' && styles.label,
         type === 'link' && styles.link,
         type === 'linkPrimary' && styles.linkPrimary,
         type === 'code' && styles.code,
@@ -42,8 +44,8 @@ export function ThemedText({ style, type = 'default', themeColor, ...rest }: The
   );
 }
 
-// Type system: serif (Fonts.serif — New York on iOS) for page titles, book titles and
-// big numbers; light-weight system sans for everything else.
+// Type system (see CLAUDE.md): one clean system sans (SF Pro on iPhone, close to Inter).
+// Hierarchy comes from size and weight only.
 const styles = StyleSheet.create({
   small: {
     fontSize: 14,
@@ -61,32 +63,40 @@ const styles = StyleSheet.create({
     fontWeight: 400,
   },
   title: {
-    fontFamily: Fonts.serif,
-    fontSize: 40,
-    lineHeight: 46,
-    fontWeight: 400,
+    fontSize: 30,
+    lineHeight: 36,
+    fontWeight: 600,
+    letterSpacing: -0.6,
   },
+  /** Page titles: My Books, Stats, Record… */
   subtitle: {
-    fontFamily: Fonts.serif,
-    fontSize: 32,
-    lineHeight: 40,
-    fontWeight: 400,
-    letterSpacing: -0.3,
+    fontSize: 26,
+    lineHeight: 32,
+    fontWeight: 600,
+    letterSpacing: -0.5,
   },
-  /** Book titles and section headings. */
+  /** Book titles and section headings (legacy name — no longer a serif). */
   serif: {
-    fontFamily: Fonts.serif,
-    fontSize: 19,
-    lineHeight: 26,
-    fontWeight: 400,
+    fontSize: 17,
+    lineHeight: 23,
+    fontWeight: 600,
+    letterSpacing: -0.2,
   },
   /** Big stat numbers. */
   number: {
-    fontFamily: Fonts.serif,
-    fontSize: 28,
-    lineHeight: 34,
-    fontWeight: 400,
+    fontSize: 22,
+    lineHeight: 28,
+    fontWeight: 600,
+    letterSpacing: -0.4,
     fontVariant: ['tabular-nums'],
+  },
+  /** Small uppercase labels: THIS WEEK, CURRENTLY READING… */
+  label: {
+    fontSize: 11,
+    lineHeight: 14,
+    fontWeight: 600,
+    letterSpacing: 1.6,
+    textTransform: 'uppercase',
   },
   link: {
     lineHeight: 30,
