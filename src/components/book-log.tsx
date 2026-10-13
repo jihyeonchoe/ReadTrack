@@ -5,6 +5,7 @@ import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, View } fro
 import { AppButton } from '@/components/app-button';
 import { type Book } from '@/components/book-card';
 import { ProgressBar } from '@/components/progress-bar';
+import { SessionEditor } from '@/components/session-editor';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { MaxContentWidth } from '@/constants/theme';
@@ -17,6 +18,7 @@ import { supabase } from '../../lib/supabase';
 
 type SessionRow = {
   id: string;
+  book_id: string;
   session_date: string;
   minutes: number | null;
   pages: number | null;
@@ -43,6 +45,8 @@ export function BookLog({ id }: { id: string | undefined }) {
   >(null);
   const [sessions, setSessions] = useState<SessionRow[]>([]);
   const [loading, setLoading] = useState(true);
+  // Session being edited (own books only)
+  const [editing, setEditing] = useState<SessionRow | null>(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -64,7 +68,7 @@ export function BookLog({ id }: { id: string | undefined }) {
         .single(),
       supabase
         .from('reading_sessions')
-        .select('id, session_date, minutes, pages, note, created_at')
+        .select('id, book_id, session_date, minutes, pages, note, created_at')
         .eq('book_id', id)
         .order('session_date', { ascending: false })
         .order('created_at', { ascending: false }),
@@ -229,7 +233,17 @@ export function BookLog({ id }: { id: string | undefined }) {
                   </View>
                   {day.items.map((s) => {
                     return (
-                      <View key={s.id} style={[styles.row, { borderColor: theme.border }]}>
+                      <Pressable
+                        key={s.id}
+                        disabled={!isMine}
+                        onPress={() => setEditing(s)}
+                        accessibilityRole={isMine ? 'button' : undefined}
+                        accessibilityHint={isMine ? 'Edit or delete this session' : undefined}
+                        style={({ pressed }) => [
+                          styles.row,
+                          { borderColor: theme.border },
+                          pressed && styles.pressed,
+                        ]}>
                         <View style={styles.rowTop}>
                           <ThemedText type="small">
                             {[
@@ -245,7 +259,7 @@ export function BookLog({ id }: { id: string | undefined }) {
                             “{s.note}”
                           </ThemedText>
                         ) : null}
-                      </View>
+                      </Pressable>
                     );
                   })}
                 </View>
@@ -257,6 +271,7 @@ export function BookLog({ id }: { id: string | undefined }) {
         )}
       </ScrollView>
 
+      <SessionEditor session={editing} onClose={() => setEditing(null)} onChanged={load} />
     </ThemedView>
   );
 }
@@ -331,5 +346,6 @@ const styles = StyleSheet.create({
   empty: { marginVertical: 32, textAlign: 'center' },
   day: { marginTop: 28 },
   row: { paddingVertical: 14, borderBottomWidth: 1, gap: 4 },
+  pressed: { opacity: 0.6 },
   rowTop: { flexDirection: 'row', justifyContent: 'space-between', gap: 8 },
 });

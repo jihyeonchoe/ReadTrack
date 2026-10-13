@@ -5,6 +5,7 @@ import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { AppButton } from '@/components/app-button';
 import { type Book } from '@/components/book-card';
 import { NoteField } from '@/components/note-field';
+import { SessionEditor } from '@/components/session-editor';
 import { Sheet } from '@/components/sheet';
 import { TextField } from '@/components/text-field';
 import { ThemedText } from '@/components/themed-text';
@@ -31,6 +32,9 @@ export default function DayScreen() {
   const { date } = useLocalSearchParams<{ date: string }>();
   const [sessions, setSessions] = useState<DaySession[]>([]);
   const [loaded, setLoaded] = useState(false);
+
+  // Session being edited
+  const [editing, setEditing] = useState<DaySession | null>(null);
 
   // "Log reading" sheet
   const [logging, setLogging] = useState(false);
@@ -116,12 +120,26 @@ export default function DayScreen() {
           sessions.map((s) => (
             <Pressable
               key={s.id}
-              onPress={() => router.push({ pathname: '/profile/book/[id]', params: { id: s.book_id } })}
+              onPress={() => setEditing(s)}
               accessibilityRole="button"
+              accessibilityHint="Edit or delete this session"
               style={({ pressed }) => [styles.row, { borderColor: theme.border }, pressed && styles.pressed]}>
-              <ThemedText type="serif" style={styles.title}>
-                {s.books?.title ?? 'A book'}
-              </ThemedText>
+              <View style={styles.rowTop}>
+                <ThemedText type="serif" style={styles.title}>
+                  {s.books?.title ?? 'A book'}
+                </ThemedText>
+                <Pressable
+                  onPress={() =>
+                    router.push({ pathname: '/profile/book/[id]', params: { id: s.book_id } })
+                  }
+                  accessibilityRole="button"
+                  accessibilityLabel={`Open ${s.books?.title ?? 'book'}`}
+                  hitSlop={12}>
+                  <ThemedText type="small" themeColor="textSecondary">
+                    Book ›
+                  </ThemedText>
+                </Pressable>
+              </View>
               <ThemedText type="small" themeColor="textSecondary">
                 {[s.minutes && formatDuration(s.minutes), s.pages && `${s.pages} pages`]
                   .filter(Boolean)
@@ -132,6 +150,8 @@ export default function DayScreen() {
           ))
         )}
       </ScrollView>
+
+      <SessionEditor session={editing} onClose={() => setEditing(null)} onChanged={load} />
 
       <Sheet visible={logging} title={`Log reading · ${date ? formatDay(date) : ''}`} onClose={() => setLogging(false)}>
         {books.length === 0 ? (
@@ -203,7 +223,8 @@ const styles = StyleSheet.create({
   statValue: { fontSize: 20, lineHeight: 26 },
   empty: { marginTop: 32, textAlign: 'center' },
   row: { paddingVertical: 16, borderBottomWidth: 1, gap: 4 },
-  title: { fontSize: 18, lineHeight: 24 },
+  title: { fontSize: 18, lineHeight: 24, flexShrink: 1 },
+  rowTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 12 },
   pressed: { opacity: 0.6 },
   logButton: { marginTop: 16, alignSelf: 'flex-start' },
   picker: { maxHeight: 180, flexGrow: 0 },

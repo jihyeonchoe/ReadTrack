@@ -75,3 +75,47 @@ export function progressBySession(sessions: SessionForProgress[]): Record<string
 export function formatPageProgress(reached: number, total: number | null | undefined): string {
   return total ? `${reached}/${total} pages` : `${reached} pages`;
 }
+
+export type EditableSession = {
+  id: string;
+  book_id: string;
+  minutes: number | null;
+  pages: number | null;
+  note: string | null;
+};
+
+/** Adds `delta` pages (can be negative) to a book's running total, never below 0. */
+async function adjustBookPages(bookId: string, delta: number) {
+  if (!delta) return;
+  const { data } = await supabase.from('books').select('pages_read').eq('id', bookId).single();
+  if (!data) return;
+  await supabase
+    .from('books')
+    .update({ pages_read: Math.max(0, (data.pages_read ?? 0) + delta) })
+    .eq('id', bookId);
+}
+
+/** Changes a session's minutes / pages / note and keeps the book's pages-read total in sync. */
+export async function updateSession(
+  session: EditableSession,
+  changes: { minutes: number | null; pages: number | null; note: string | null }
+): Promise<boolean> {
+  const { error } = await supabase.from('reading_sessions').update(changes).eq('id', session.id);
+  if (error) {
+    Alert.alert('Error saving changes', error.message);
+    return false;
+  }
+  await adjustBookPages(session.book_id, (changes.pages ?? 0) - (session.pages ?? 0));
+  return true;
+}
+
+/** Deletes a session and takes its pages off the book's pages-read total. */
+export async function deleteSession(session: EditableSession): Promise<boolean> {
+  const { error } = await supabase.from('reading_sessions').delete().eq('id', session.id);
+  if (error) {
+    Alert.alert('Error deleting session', error.message);
+    return false;
+  }
+  await adjustBookPages(session.book_id, -(session.pages ?? 0));
+  return true;
+}
